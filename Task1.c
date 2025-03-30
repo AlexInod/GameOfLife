@@ -2,7 +2,7 @@
 int main(int argc, char **argv)
 {
     if (argc != 3)
-        return 1;//1
+        return 1;//11
     int N, M, T, K;
     char **mat;
     mat = citire_fisier(argv[1], &N, &M, &T, &K);

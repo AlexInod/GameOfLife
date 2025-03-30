@@ -1,4 +1,4 @@
-# Compiler and flagsa
+# Compiler and flagsa1
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
 

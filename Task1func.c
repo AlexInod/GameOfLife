@@ -89,7 +89,7 @@ void reguli(char **mat, int n, int m)
 void scrierez(char **mat, int n, char *dir, int index)
 {
     char nume[100];
-    index += 1;
+    index += 1;//1
     sprintf(nume, "%s/data%d.out", dir, index);
     FILE *f = fopen(nume, "w");
     if (!f)
