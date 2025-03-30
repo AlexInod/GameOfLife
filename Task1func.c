@@ -86,11 +86,11 @@ void reguli(char **mat, int n, int m)
     elibereaza_memorie(tmp, n);
 }
 
-void scrierez(char **mat, int n, char *dir, int index)
+void scrierez(char **mat, int n, char *director, int index)
 {
     char nume[100];
     index += 1;//1
-    sprintf(nume, "%s/data%d.out", dir, index);
+    sprintf(nume, "%s/data%d.out", director, index);
     FILE *f = fopen(nume, "w");
     if (!f)
     {
