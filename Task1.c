@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         free(generari);
         elibereaza_memorie(mat, N);
         elibereaza_memorie(mat2, N);
-        //
+        ////
         return 0;
     }
 }
