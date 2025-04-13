@@ -1,4 +1,84 @@
 #include "Task1.h"
+int compara_coordonate(const void *a, const void *b)
+{
+    Coordonata *c1 = (Coordonata *)a;
+    Coordonata *c2 = (Coordonata *)b;
+    int c1_col_zero = (c1->c == 0);
+    int c2_col_zero = (c2->c == 0);
+    if (c1_col_zero && !c2_col_zero)
+        return 1;
+    if (!c1_col_zero && c2_col_zero)
+        return -1;
+    if (c1->l != c2->l)
+        return c1->l - c2->l;
+    return c1->c - c2->c;
+}
+Generare initiere()
+{
+    Generare gen;
+    gen.capacitate = 10;
+    gen.count = 0;
+    gen.celule = (Coordonata *)malloc(gen.capacitate * sizeof(Coordonata));
+    if (gen.celule == NULL)
+    {
+        printf("err\n");
+        exit(1);
+    }
+    return gen;
+}
+void Adauga(Generare *gen, int l, int c)
+{
+    if (gen->count >= gen->capacitate)
+    {
+        gen->capacitate *= 2;
+        gen->celule = (Coordonata *)realloc(gen->celule, gen->capacitate * sizeof(Coordonata));
+        if (gen->celule == NULL)
+        {
+            printf("err\n");
+            exit(1);
+        }
+    }
+
+    gen->celule[gen->count].l = l;
+    gen->celule[gen->count].c = c;
+    gen->count++;
+}
+
+Generare generatia_urm(char **current, char **next, int n, int m)
+{
+    Generare gen = initiere();
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            int neighbors = calc_vecini(current, n, m, i, j);
+
+            if (current[i][j] == 'X')
+            {
+                if (neighbors < 2 || neighbors > 3)
+                    next[i][j] = '+';
+                else
+                    next[i][j] = 'X';
+            }
+            else
+            {
+                if (neighbors == 3)
+                    next[i][j] = 'X';
+                else
+                    next[i][j] = '+';
+            }
+
+            if (current[i][j] != next[i][j])
+            {
+                Adauga(&gen, i, j);
+            }
+        }
+    }
+    qsort(gen.celule, gen.count, sizeof(Coordonata), compara_coordonate);
+
+    return gen;
+}
 char **aloca_matrice(int n, int m)
 {
     char **mat;
@@ -27,7 +107,7 @@ char **citire_fisier(char *fisier, int *n, int *m, int *t, int *k)
     FILE *f = fopen(fisier, "r");
     if (!f)
     {
-        printf("error");
+        printf("err");
         exit(1);
     }
     fscanf(f, "%d%d%d%d", t, n, m, k);
@@ -82,22 +162,49 @@ void reguli(char **mat, int n, int m)
         for (int j = 0; j < m; j++)
         {
             mat[i][j] = tmp[i][j];
-        }//1
+        } // 1
     elibereaza_memorie(tmp, n);
 }
 
-void scrierez(char **mat, int n, char *director, int index)
+void scrierez(char **mat, int n, char *output_file)
 {
-    char nume[100];
-    index += 1;//1
-    sprintf(nume, "%s/data%d.out", director, index);
-    FILE *f = fopen(nume, "w");
+    FILE *f = fopen(output_file, "a");
     if (!f)
     {
-        printf("err");
+        printf("err\n");
+        exit(1);
+    }
+    if (!f)
+    {
+        printf("err\n");
         exit(1);
     }
     for (int i = 0; i < n; i++)
         fprintf(f, "%s\n", mat[i]);
+    fprintf(f, "\n");
+    fclose(f);
+}
+void scriererez2(Generare *generari, int k, char *output_file)
+{
+    FILE *f = fopen(output_file, "w");
+    if (!f)
+    {
+        printf("err\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < k; i++)
+    {
+        fprintf(f, "%d ", i + 1);
+
+        for (int j = 0; j < generari[i].count; j++)
+        {
+            fprintf(f, "%d %d", generari[i].celule[j].l, generari[i].celule[j].c);
+            if (j < generari[i].count - 1)
+                fprintf(f, " ");
+        }
+        fprintf(f, "\n");
+    }
+
     fclose(f);
 }
