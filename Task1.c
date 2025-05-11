@@ -48,4 +48,17 @@ int main(int argc, char **argv)
         ////
         return 0;
     }
+    else if (T == 3)
+    {
+        FILE *f = fopen(argv[2], "w");
+        fclose(f);
+        char **initial_mat = copy_matrice(mat, N, M);
+        Node *root = build_tree(initial_mat, N, M, K);
+        pre_order_traversal(root, argv[2]);
+        free_tree(root);
+        elibereaza_memorie(mat, N);
+        return 0;
+    }
+    elibereaza_memorie(mat, N);
+    return 1;
 }

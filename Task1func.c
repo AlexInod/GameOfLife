@@ -208,3 +208,104 @@ void scriererez2(Generare *generari, int k, char *output_file)
 
     fclose(f);
 }
+Node *create_node(char **matrix, int n, int m)
+{
+    Node *node = (Node *)malloc(sizeof(Node));
+    node->n = n;
+    node->m = m;
+    node->mat = matrix;
+    node->left = NULL;
+    node->right = NULL;
+
+    return node;
+}
+
+void free_node(Node *node)
+{
+    if (node == NULL)
+        return;
+
+    elibereaza_memorie(node->mat, node->n);
+    free(node);
+}
+void free_tree(Node *root)
+{
+    if (root == NULL)
+        return;
+
+    free_tree(root->left);
+    free_tree(root->right);
+    free_node(root);
+}
+
+void regulaB(char **src, char **dest, int n, int m)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            int neighbors = calc_vecini(src, n, m, i, j);
+
+            if (neighbors == 2)
+
+                dest[i][j] = 'X';
+            else
+                dest[i][j] = src[i][j];
+        }
+    }
+}
+
+char **copy_matrice(char **src, int n, int m)
+{
+    char **dest = aloca_matrice(n, m);
+    for (int i = 0; i < n; i++)  
+        for (int j = 0; j < m; j++)     
+            dest[i][j] = src[i][j];
+        
+    
+
+    return dest;
+}
+Node *build_tree(char **matrix, int n, int m, int depth)
+{
+    if (depth == 0)   
+        return create_node(matrix, n, m);
+    Node *root = create_node(matrix, n, m);
+    char **left_mat = copy_matrice(matrix, n, m);
+    char **left_next = aloca_matrice(n, m);
+    regulaB(left_mat, left_next, n, m);
+    root->left = build_tree(left_next, n, m, depth - 1);
+    elibereaza_memorie(left_mat, n);
+    char **right_mat = copy_matrice(matrix, n, m);
+    char **right_next = aloca_matrice(n, m);
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            int vecini = calc_vecini(right_mat, n, m, i, j);
+
+            if (right_mat[i][j] == 'X')
+                if (vecini < 2 || vecini > 3)
+                    right_next[i][j] = '+';
+                else
+                    right_next[i][j] = 'X';
+            else
+                if (vecini == 3)
+                    right_next[i][j] = 'X';
+                else
+                    right_next[i][j] = '+';
+        }
+    }
+    root->right = build_tree(right_next, n, m, depth - 1);
+    elibereaza_memorie(right_mat, n);
+
+    return root;
+}
+void pre_order_traversal(Node *root, char *output_file)
+{
+    if (root == NULL)
+        return;
+    scrierez(root->mat, root->n, output_file);
+    pre_order_traversal(root->left, output_file);
+    pre_order_traversal(root->right, output_file);
+}

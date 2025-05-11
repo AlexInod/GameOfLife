@@ -23,4 +23,17 @@ int calc_vecini(char **mat, int n, int m, int x, int y);
 void reguli(char **mat, int n, int m);
 void scrierez(char **mat, int n, char *output_file);
 void scriererez2(Generare *generations, int k, char *output_file);
+typedef struct Node {
+    char **mat;            
+    int n, m;                 
+    struct Node *left;    
+    struct Node *right;  
+} Node;
+Node* create_node(char **mat, int n, int m);
+void free_node(Node *node);
+void free_tree(Node *root);
+void regulaB(char **src, char **dest,int n, int m);
+Node* build_tree(char **mat, int n, int m, int depth);
+void pre_order_traversal(Node *root, char *output_file);
+char** copy_matrice(char **src, int n, int m);
 #endif 
