@@ -59,6 +59,10 @@ int main(int argc, char **argv)
         elibereaza_memorie(mat, N);
         return 0;
     }
+    else if(T ==5){
+        task5(argv[1],argv[2]);
+        return 0;
+    }
     elibereaza_memorie(mat, N);
     return 1;
 }

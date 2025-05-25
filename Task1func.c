@@ -258,17 +258,15 @@ void regulaB(char **src, char **dest, int n, int m)
 char **copy_matrice(char **src, int n, int m)
 {
     char **dest = aloca_matrice(n, m);
-    for (int i = 0; i < n; i++)  
-        for (int j = 0; j < m; j++)     
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
             dest[i][j] = src[i][j];
-        
-    
 
     return dest;
 }
 Node *build_tree(char **matrix, int n, int m, int depth)
 {
-    if (depth == 0)   
+    if (depth == 0)
         return create_node(matrix, n, m);
     Node *root = create_node(matrix, n, m);
     char **left_mat = copy_matrice(matrix, n, m);
@@ -289,12 +287,11 @@ Node *build_tree(char **matrix, int n, int m, int depth)
                     right_next[i][j] = '+';
                 else
                     right_next[i][j] = 'X';
+            else if (vecini == 3)
+                right_next[i][j] = 'X';
             else
-                if (vecini == 3)
-                    right_next[i][j] = 'X';
-                else
-                    right_next[i][j] = '+';
-        }
+                right_next[i][j] = '+';
+        } //
     }
     root->right = build_tree(right_next, n, m, depth - 1);
     elibereaza_memorie(right_mat, n);
@@ -308,4 +305,87 @@ void pre_order_traversal(Node *root, char *output_file)
     scrierez(root->mat, root->n, output_file);
     pre_order_traversal(root->left, output_file);
     pre_order_traversal(root->right, output_file);
+}
+// bonus T5
+void read_task5(char *fisier, int *n, int *m, int *k, Generare **generari, char ***matricefinala)
+{
+    FILE *f = fopen(fisier, "r");
+    if (!f)
+        exit(1);
+    int t;
+    fscanf(f, "%d%d%d%d", &t, n, m, k);
+    *generari = (Generare *)malloc((*k) * sizeof(Generare));
+    for (int i = 0; i < *k; i++)
+    {
+        (*generari)[i] = initiere();
+        int gen_num;
+        fscanf(f, "%d", &gen_num);
+        char lin[10000];
+        fgets(lin,sizeof(lin), f);
+        char *p = lin;
+        while (*p)
+        {
+            if (*p == '(')
+            {
+                int row, col;
+                sscanf(p, "(%d,%d)", &row, &col);
+                Adauga(&(*generari)[i], row, col);
+                while (*p && *p != ')')
+                    p++;
+                if (*p)
+                    p++;
+            }
+            else
+                p++;
+        }
+    }
+    *matricefinala = aloca_matrice(*n, *m);
+    for (int i = 0; i < *n; i++)
+        fscanf(f, "%s", (*matricefinala)[i]);
+    fclose(f);
+}
+void task5(char *input, char *out)
+{
+    int n, m, k;
+    Generare *generari;
+    char **matricefinala;
+    read_task5(input, &n, &m, &k, &generari, &matricefinala);
+    char **current = copy_matrice(matricefinala, n, m);
+    char **prev = aloca_matrice(n, m);
+    for (int gen = k - 1; gen >= 0; gen--)
+    {
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                prev[i][j] = current[i][j];
+
+        for (int i = 0; i < generari[gen].count; i++)
+        {
+            int row = generari[gen].celule[i].l;
+            int col = generari[gen].celule[i].c;
+            if (prev[row][col] == 'X'){
+                prev[row][col] = '+' ;
+            }
+                else {
+                prev[row][col] = 'X';
+                }
+        }
+        char **temp = current;
+        current = prev;
+        prev = temp;
+    }
+    FILE *f = fopen(out, "w");
+    if (!f)
+        exit(1);
+    for (int i = 0; i < n; i++){
+        fprintf(f, "%s\n", current[i]);
+    }
+        fclose(f);
+
+    for (int i = 0; i < k; i++)
+        free(generari[i].celule);
+
+    free(generari);
+    elibereaza_memorie(current, n);
+    elibereaza_memorie(prev, n);
+    elibereaza_memorie(matricefinala, n);
 }

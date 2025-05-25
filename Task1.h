@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 typedef struct {
     int l; 
     int c; 
@@ -36,4 +37,6 @@ void regulaB(char **src, char **dest,int n, int m);
 Node* build_tree(char **mat, int n, int m, int depth);
 void pre_order_traversal(Node *root, char *output_file);
 char** copy_matrice(char **src, int n, int m);
+void read_task5(char *fisier, int *n, int *m, int *k, Generare **generari, char ***matricefinala);
+void task5(char *input, char *out);
 #endif 
